@@ -3,6 +3,7 @@
 import * as S from './state.js';
 import { renderLists, renderScenarioOptions, scenarioLabel } from './render.js';
 import { enableDrag } from './drag.js';
+import { suggestions } from './classes.js';
 
 const $ = (selector) => document.querySelector(selector);
 const el = {
@@ -112,6 +113,18 @@ function addFromForm(form, add) {
   });
 }
 addFromForm(el.characterForm, S.addCharacter);
+
+// Class name suggestions. Only rebuilt when the list of names changes.
+const classList = $('#class-suggestions');
+let suggested = '';
+function updateSuggestions() {
+  const names = suggestions(el.characterForm.elements.name.value);
+  if (names.join() === suggested) return;
+  suggested = names.join();
+  classList.replaceChildren(...names.map((name) => new Option(name)));
+}
+el.characterForm.elements.name.addEventListener('input', updateSuggestions);
+updateSuggestions();
 addFromForm(el.customForm, S.addCustomMonster);
 
 const hasMonsters = () => Object.values(state.plates).some((p) => p.kind === 'monster');

@@ -4,7 +4,7 @@
 // RELEASE CHECKLIST: bump CACHE_VERSION whenever any file below changes,
 // otherwise returning players keep the old version.
 
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 2;
 const CACHE = `ghit-v${CACHE_VERSION}`;
 const FILES = [
   './',
@@ -14,7 +14,14 @@ const FILES = [
   'js/state.js',
   'js/render.js',
   'js/drag.js',
+  'js/classes.js',
   'data/scenarios.json',
+  'fonts/PirataOne-Gloomhaven.ttf',
+  ...[
+    'beast-tyrant', 'berserker', 'brute', 'cragheart', 'doomstalker', 'elementalist',
+    'mindthief', 'nightshroud', 'plagueherald', 'quartermaster', 'sawbones', 'scoundrel',
+    'soothsinger', 'spellweaver', 'summoner', 'sunkeeper', 'tinkerer',
+  ].map((id) => `icons/classes/${id}.png`),
   'manifest.webmanifest',
   'icon.svg',
 ];

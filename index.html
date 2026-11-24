@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Gloomhaven Initiative Tracker</title>
   <meta name="description" content="A simple initiative order tracker for Gloomhaven (1st edition).">
-  <meta name="theme-color" content="#16130f">
+  <meta name="theme-color" content="#3b2524">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/PirataOne-Gloomhaven.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="css/app.css">
   <script type="module" src="js/main.js"></script>
 </head>
@@ -39,7 +40,8 @@
       <form id="character-form" class="field" autocomplete="off">
         <label for="character-name">Add character</label>
         <div class="row">
-          <input id="character-name" name="name" maxlength="40" placeholder="e.g. Brute" required>
+          <input id="character-name" name="name" maxlength="40" placeholder="Class or player name, e.g. Brute" list="class-suggestions" required>
+          <datalist id="class-suggestions"></datalist>
           <button type="submit">Add</button>
         </div>
       </form>
@@ -47,7 +49,7 @@
       <form id="custom-form" class="field" autocomplete="off">
         <label for="custom-name">Add monster</label>
         <div class="row">
-          <input id="custom-name" name="name" maxlength="40" placeholder="e.g. a summon or spawned monster" required>
+          <input id="custom-name" name="name" maxlength="40" placeholder="e.g. a summon" required>
           <button type="submit">Add</button>
         </div>
       </form>
@@ -74,6 +76,8 @@
   <footer class="footer">
     <p>Unofficial fan tool, not affiliated with Cephalofair Games. Scenario data from
       <a href="https://github.com/Lurkars/gloomhavensecretariat">Gloomhaven Secretariat</a>.
+      Class icons and font from the Gloomhaven Creator Pack (CC BY-NC-SA 4.0 / OFL).
+      Palette: <a href="https://lospec.com/palette-list/apricot">Apricot</a> by Chase Stemel.
       <a href="https://github.com/MilicaKorpikajo/initiative-order-tracker">Source code</a> (AGPL-3.0).</p>
   </footer>
 
@@ -82,6 +86,7 @@
   <template id="plate-template">
     <li class="plate">
       <span class="grip" aria-hidden="true"></span>
+      <span class="class-icon" aria-hidden="true" hidden></span>
       <span class="name"></span>
       <span class="badge" hidden>Boss</span>
       <span class="buttons">

@@ -1,6 +1,7 @@
 // Turns state into DOM. Full redraw of two short lists: simple and cheap.
 
 import { LISTS } from './state.js';
+import { findClass, iconUrl } from './classes.js';
 
 const LABELS = {
   up: (name) => `Move ${name} up`,
@@ -20,6 +21,15 @@ function plateElement(template, plate, list, index, count) {
   li.dataset.kind = plate.custom ? 'custom' : plate.kind;
   li.querySelector('.name').textContent = plate.name;
   if (plate.boss) li.querySelector('.badge').hidden = false;
+
+  const cls = plate.kind === 'character' ? findClass(plate.name) : null;
+  if (cls) {
+    const icon = li.querySelector('.class-icon');
+    const url = `url("${iconUrl(cls)}")`;
+    icon.style.maskImage = url;
+    icon.style.webkitMaskImage = url;
+    icon.hidden = false;
+  }
 
   const wanted = list === 'active'
     ? ['up', 'down', 'deactivate']

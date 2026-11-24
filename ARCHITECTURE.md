@@ -1,6 +1,6 @@
 # Architecture proposal
 
-Status: **v1 implemented.** This document began as the pre-code proposal and has been updated to match what was built.
+Status: **v1 implemented, with class icons, the Pirata One font and the Apricot palette.** This document began as the pre-code proposal and has been updated to match what was built.
 
 ## 1. Goals recap
 
@@ -136,9 +136,13 @@ This file holds only names and ids. It has no stats, ability cards or art.
 │   ├── main.js           # bootstraps: load state, load data, wire events, first render
 │   ├── state.js          # state shape, pure update functions, load/save/migrate
 │   ├── render.js         # draws the lists and the scenario picker from state
+│   ├── classes.js        # class list, class-name matching for icons, spoiler-safe suggestions
 │   └── drag.js           # pointer-based drag and drop, with no app knowledge (calls onDrop(id, list, index))
+├── icons/classes/        # 17 class icons (PNG, CSS-masked), CC BY-NC-SA 4.0 from the Creator Pack
+├── fonts/                # Pirata One (OFL), from the Creator Pack
 ├── tests/
-│   └── state.test.js     # node --test unit tests for state.js
+│   ├── state.test.js     # node --test unit tests for state.js
+│   └── classes.test.js   # unit tests for classes.js
 ├── data/
 │   └── scenarios.json    # generated, names-only scenario → monster mapping
 ├── scripts/
