@@ -1,0 +1,288 @@
+/* Gloomhaven Initiative Tracker. No animations or transitions on purpose. */
+
+:root {
+  color-scheme: dark light;
+  --bg: #16130f;
+  --surface: #241e18;
+  --surface-2: #2f281f;
+  --border: #4a3f33;
+  --text: #f2ebdf;
+  --muted: #b3a493;
+  --accent: #e0b14a;
+  --character: #4f9cc9;
+  --monster: #c0533f;
+  --custom: #9a7fc7;
+  --boss: #e0b14a;
+  --danger: #e0705c;
+  --focus: #ffd36b;
+  --radius: 10px;
+  --tap: 44px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 100%;
+  line-height: 1.4;
+  background: var(--bg);
+  color: var(--text);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f3eee5;
+    --surface: #ffffff;
+    --surface-2: #ece4d6;
+    --border: #cbbfae;
+    --text: #1f1a14;
+    --muted: #6b5d4c;
+    --accent: #8a5d00;
+    --character: #1f6f9f;
+    --monster: #a8402d;
+    --custom: #6e52a3;
+    --boss: #a87700;
+    --danger: #b3402c;
+    --focus: #1f6f9f;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0 auto;
+  max-width: 64rem;
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+}
+
+h1, h2, p { margin: 0; }
+
+a { color: var(--accent); }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Header and setup ---------------------------------------------------- */
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.top h1 { font-size: 1.5rem; }
+.scenario-title { color: var(--muted); }
+
+.setup {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+.setup summary {
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.setup-body {
+  display: grid;
+  gap: 1rem;
+  padding: 0 1rem 1rem;
+}
+
+.field { display: grid; gap: 0.35rem; }
+.field label { font-weight: 600; font-size: 0.9rem; }
+
+.row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.row input { flex: 1 1 12rem; }
+
+input, select, button {
+  font: inherit;
+  color: inherit;
+  min-height: var(--tap);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: 0.4rem 0.75rem;
+}
+
+input::placeholder { color: var(--muted); opacity: 1; }
+
+button { cursor: pointer; font-weight: 600; }
+button:disabled { cursor: default; opacity: 0.35; }
+button.danger { color: var(--danger); }
+
+.error { color: var(--danger); }
+
+/* --- Board --------------------------------------------------------------- */
+
+.board {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 48rem) {
+  .board { grid-template-columns: 3fr 2fr; }
+}
+
+.area h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+.area-inactive h2 { margin-bottom: 0; }
+.hint { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+
+.plates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  min-height: 4.5rem;
+  counter-reset: position;
+}
+
+.plates:empty {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.plates:empty::after { content: attr(data-empty); }
+
+/* --- Nameplates ---------------------------------------------------------- */
+
+.plate {
+  --kind: var(--monster);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 3.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--kind);
+  border-radius: var(--radius);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.plate[data-kind="character"] { --kind: var(--character); }
+.plate[data-kind="custom"] { --kind: var(--custom); }
+
+/* Position numbers in the initiative order. */
+#active > .plate,
+#active > .placeholder { counter-increment: position; }
+
+#active > .plate::before {
+  content: counter(position);
+  min-width: 1.75rem;
+  padding-left: 0.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.grip {
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  cursor: grab;
+  touch-action: none; /* the grip drags; the rest of the page scrolls normally */
+  background: radial-gradient(circle, var(--muted) 1.6px, transparent 2px) center / 8px 8px;
+  background-size: 8px 8px;
+  background-clip: content-box;
+  padding: 12px 14px;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--boss);
+  border: 1px solid var(--boss);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+}
+
+.buttons { display: flex; flex: none; }
+
+button.icon {
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+
+button.icon:hover:not(:disabled) { background: var(--surface-2); }
+
+button.icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- Drag and drop ------------------------------------------------------- */
+
+.plate.dragging {
+  position: fixed;
+  z-index: 10;
+  margin: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+  outline: 2px solid var(--accent);
+}
+
+#active > .plate.dragging { counter-increment: none; }
+#active > .plate.dragging::before { visibility: hidden; }
+
+.placeholder {
+  min-height: 3.25rem;
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
+}
+
+body.is-dragging { cursor: grabbing; }
+
+/* --- Footer -------------------------------------------------------------- */
+
+.footer {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+@media (forced-colors: active) {
+  .plate { border-left-width: 6px; }
+  .grip { background: none; border: 2px dotted CanvasText; }
+}

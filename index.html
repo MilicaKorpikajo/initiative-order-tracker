@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gloomhaven Initiative Tracker</title>
+  <meta name="description" content="A simple initiative order tracker for Gloomhaven (1st edition).">
+  <meta name="theme-color" content="#16130f">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-in" viewBox="0 0 24 24"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></symbol>
+    <symbol id="i-remove" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  </svg>
+
+  <header class="top">
+    <h1>Initiative</h1>
+    <p id="scenario-title" class="scenario-title">No scenario selected</p>
+  </header>
+
+  <details id="setup" class="setup">
+    <summary>Setup</summary>
+    <div class="setup-body">
+      <div class="field">
+        <label for="scenario">Scenario (Gloomhaven 1st edition)</label>
+        <select id="scenario" disabled>
+          <option value="">Loading scenarios…</option>
+        </select>
+        <p id="data-error" class="error" hidden>Couldn't load the scenario list. Check your connection and reload. Characters still work.</p>
+      </div>
+
+      <form id="character-form" class="field" autocomplete="off">
+        <label for="character-name">Add character</label>
+        <div class="row">
+          <input id="character-name" name="name" maxlength="40" placeholder="e.g. Brute" required>
+          <button type="submit">Add</button>
+        </div>
+      </form>
+
+      <form id="custom-form" class="field" autocomplete="off">
+        <label for="custom-name">Add monster</label>
+        <div class="row">
+          <input id="custom-name" name="name" maxlength="40" placeholder="e.g. a summon or spawned monster" required>
+          <button type="submit">Add</button>
+        </div>
+      </form>
+
+      <div class="row actions-row">
+        <button id="restart" type="button">Restart scenario</button>
+        <button id="new-game" type="button" class="danger">New game</button>
+      </div>
+    </div>
+  </details>
+
+  <main id="board" class="board">
+    <section class="area" aria-labelledby="active-heading">
+      <h2 id="active-heading">Initiative order</h2>
+      <ol id="active" class="plates" data-list="active" data-empty="Drag nameplates here"></ol>
+    </section>
+    <section class="area area-inactive" aria-labelledby="inactive-heading">
+      <h2 id="inactive-heading">Inactive</h2>
+      <p class="hint">Not revealed yet or defeated</p>
+      <ul id="inactive" class="plates" data-list="inactive" data-empty="Empty"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Unofficial fan tool, not affiliated with Cephalofair Games. Scenario data from
+      <a href="https://github.com/Lurkars/gloomhavensecretariat">Gloomhaven Secretariat</a>.
+      <a href="https://github.com/MilicaKorpikajo/initiative-order-tracker">Source code</a> (AGPL-3.0).</p>
+  </footer>
+
+  <div id="status" class="visually-hidden" role="status" aria-live="polite"></div>
+
+  <template id="plate-template">
+    <li class="plate">
+      <span class="grip" aria-hidden="true"></span>
+      <span class="name"></span>
+      <span class="badge" hidden>Boss</span>
+      <span class="buttons">
+        <button type="button" class="icon" data-action="up"><svg><use href="#i-up"/></svg></button>
+        <button type="button" class="icon" data-action="down"><svg><use href="#i-down"/></svg></button>
+        <button type="button" class="icon" data-action="deactivate"><svg><use href="#i-out"/></svg></button>
+        <button type="button" class="icon" data-action="activate"><svg><use href="#i-in"/></svg></button>
+        <button type="button" class="icon" data-action="remove"><svg><use href="#i-remove"/></svg></button>
+      </span>
+    </li>
+  </template>
+</body>
+</html>

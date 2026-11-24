@@ -1,6 +1,6 @@
 # Architecture proposal
 
-Status: **proposal — no application code written yet.**
+Status: **v1 implemented.** This document began as the pre-code proposal and has been updated to match what was built.
 
 ## 1. Goals recap
 
@@ -49,14 +49,14 @@ user action ──► state.js (pure update) ──► save to localStorage
 ```js
 {
   version: 1,                 // schema version, for safe migrations
-  scenario: "gh-001",         // selected scenario id, or null
+  scenario: "gh-1",           // selected scenario id, or null
   plates: {                   // every nameplate, keyed by id
     "c-1":          { id: "c-1", kind: "character", name: "Brute (Ana)" },
     "m-bandit-guard": { id: "m-bandit-guard", kind: "monster", name: "Bandit Guard" },
-    "m-custom-1":   { id: "m-custom-1", kind: "monster", name: "Summon: Wolf", custom: true }
+    "x-1":          { id: "x-1", kind: "monster", name: "Summon: Wolf", custom: true }
   },
   active:   ["c-1", "m-bandit-guard"],   // initiative order, top first
-  inactive: ["m-custom-1"]               // defeated, unrevealed or parked
+  inactive: ["x-1"]                      // defeated, unrevealed or parked
 }
 ```
 
@@ -66,17 +66,18 @@ Design notes:
 - **One plate per monster type, not per standee.** In Gloomhaven, normal and elite monsters of one type share a single initiative, so the tracker needs one plate per type.
 - **Choosing a scenario** keeps the character plates, removes the previous scenario's monster plates, and adds the new ones to **inactive**, since most of them are not revealed yet. Players drag them up as rooms open.
 - **Custom plates** (summons, spawned monsters, or anything missing from the data) can be added by name, so incomplete data never blocks a game.
-- A **Reset** action clears the state. A **New round** action is not needed, because the physical tracker has none either.
+- **New game** clears the state. **Restart scenario** re-applies the current scenario. A **New round** action is not needed, because the physical tracker has none either.
 - An optional initiative number per plate is left out of v1. The model has room for it later.
 
 ### Bundled scenario data (`data/scenarios.json`)
 
 ```js
 {
-  "source": "<name, URL and commit of upstream data>",
-  "monsters": { "bandit-guard": "Bandit Guard", "inox-shaman": "Inox Shaman" /* … */ },
+  "source": { "name": "Gloomhaven Secretariat", "url": "…", "license": "AGPL-3.0", "commit": "…", "path": "data/gh" },
+  "edition": "gh",
+  "monsters": { "bandit-guard": { "name": "Bandit Guard" }, "bandit-commander": { "name": "Bandit Commander", "boss": true } /* … */ },
   "scenarios": [
-    { "id": "gh-001", "number": 1, "name": "Black Barrow", "monsters": ["bandit-guard", "bandit-archer", "living-bones"] }
+    { "id": "gh-1", "number": 1, "name": "Black Barrow", "monsters": ["bandit-archer", "bandit-guard", "living-bones"] }
   ]
 }
 ```
@@ -118,7 +119,7 @@ This file holds only names and ids. It has no stats, ability cards or art.
 ## 6. Interaction and accessibility
 
 - **Drag:** a long press, or a press on a dedicated grip handle, starts a drag. The handle has `touch-action: none` so page scrolling still works everywhere else. `setPointerCapture` keeps the drag on the same element. A placeholder gap shows where the plate will land, and dropping on the other area moves the plate there.
-- **Without drag:** each plate is a list item with small buttons: ↑ ↓, and "Deactivate" or "Activate". Alternatively, a focused plate responds to keys: Space to pick up, arrows to move, Space to drop, Esc to cancel. After every move, an `aria-live="polite"` region announces something like "Bandit Guard moved to position 3 of 7".
+- **Without drag:** plates in the initiative order have ↑, ↓ and "move to inactive" buttons. Inactive plates have "move to initiative order", and characters and custom monsters also have "remove". Every button has an `aria-label` that includes the plate name, and focus stays on the moved plate. After every move, a `role="status"` live region announces something like "Bandit Guard moved to position 3 of 7". A separate keyboard pick-up mode was dropped because the buttons already cover it.
 - Semantic markup: `<ol>` for the initiative order and `<ul>` for inactive, real `<button>`s, visible focus styles, targets at least 44×44 px, and colors that pass WCAG AA.
 - Mobile-first layout, one column on phones and two side by side on tablets.
 
@@ -135,9 +136,9 @@ This file holds only names and ids. It has no stats, ability cards or art.
 │   ├── main.js           # bootstraps: load state, load data, wire events, first render
 │   ├── state.js          # state shape, pure update functions, load/save/migrate
 │   ├── render.js         # draws the lists and the scenario picker from state
-│   ├── drag.js           # pointer-based drag and drop, with no app knowledge (emits move(id, list, index))
-│   ├── keyboard.js       # keyboard reordering and live-region announcements
-│   └── scenarios.js      # loads data/scenarios.json and builds monster plates
+│   └── drag.js           # pointer-based drag and drop, with no app knowledge (calls onDrop(id, list, index))
+├── tests/
+│   └── state.test.js     # node --test unit tests for state.js
 ├── data/
 │   └── scenarios.json    # generated, names-only scenario → monster mapping
 ├── scripts/
@@ -146,7 +147,7 @@ This file holds only names and ids. It has no stats, ability cards or art.
 └── README.md
 ```
 
-Modules stay small and single-purpose. Only `state.js` changes state. `drag.js` and `keyboard.js` only emit "move" intents, so they can be tested or replaced on their own.
+Modules stay small and single-purpose. Only `state.js` changes state. `drag.js` and the plate buttons only produce "move" requests, so they can be tested or replaced on their own.
 
 ## 8. Things deliberately left out
 

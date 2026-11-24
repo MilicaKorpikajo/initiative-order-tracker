@@ -1,0 +1,12 @@
+{
+  "name": "initiative-order-tracker",
+  "private": true,
+  "description": "Lightweight browser-based initiative tracker for Gloomhaven (1st edition)",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node --test tests/",
+    "build:data": "node scripts/build-data.mjs vendor/ghs"
+  }
+}

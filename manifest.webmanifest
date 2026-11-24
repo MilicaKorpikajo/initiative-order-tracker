@@ -1,0 +1,13 @@
+{
+  "name": "Gloomhaven Initiative Tracker",
+  "short_name": "Initiative",
+  "description": "A simple initiative order tracker for Gloomhaven (1st edition).",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#16130f",
+  "theme_color": "#16130f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
