@@ -174,5 +174,16 @@ loadData();
 // files; add ?sw to the URL to test it locally.
 const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 if ('serviceWorker' in navigator && (!isLocal || new URLSearchParams(location.search).has('sw'))) {
+  // When a new release takes over from an older one, reload once so the page
+  // shows it straight away. The game state is in localStorage, so nothing is lost.
+  // (No reload on the very first visit, when there was no older worker.)
+  if (navigator.serviceWorker.controller) {
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+  }
   navigator.serviceWorker.register('sw.js');
 }
