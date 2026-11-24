@@ -85,6 +85,8 @@ This file holds only names and ids. It has no stats, ability cards or art.
 
 ## 5. Scenario data: sources, risks and licensing
 
+> **Superseded by [DATA_SOURCES.md](DATA_SOURCES.md)**, which has the inspected findings and the recommendation. The notes below are the original assumptions.
+
 ### Candidate sources
 
 | Source | What it has | Notes |
