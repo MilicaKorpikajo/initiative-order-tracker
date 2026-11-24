@@ -127,6 +127,8 @@ This file holds only names and ids. It has no stats, ability cards or art.
 ```
 /
 ├── index.html            # markup and the two lists; loads js/main.js as a module
+├── sw.js                 # offline service worker (versioned cache of the app's own files)
+├── manifest.webmanifest  # optional: lets players "Add to Home Screen"
 ├── css/
 │   └── app.css           # one stylesheet, using custom properties for theming
 ├── js/
@@ -159,8 +161,5 @@ Decided on 2026-11-24 (details in [DATA_SOURCES.md](DATA_SOURCES.md#decisions-20
 - **License:** AGPL-3.0.
 - **Spoilers:** all of a scenario's monster plates are shown at setup, in the inactive area. There is no hiding by room.
 - **Plates:** one per monster type.
-
-Still open:
-
-1. Which editions to support first: GH1e only, or also Jaws of the Lion or Frosthaven?
-2. Whether to add an offline service worker in v1 or later.
+- **Edition: Gloomhaven 1st edition only.** That means the 95 main campaign scenarios, from GHS `data/gh` (every file has `"edition": "gh"`). Gloomhaven 2nd edition (`gh2e`), Forgotten Circles, Jaws of the Lion, Frosthaven, solo scenarios and the random dungeon are excluded. The `gh-` id prefix stays, so this can change later without migrating data.
+- **Offline: yes, in v1.** A small service worker caches the app's own files (HTML, CSS, JS and `scenarios.json`, about 6 files) on first visit. It is cache-first with a **versioned cache name**: each release bumps the version, the new worker caches the new files and deletes the old cache, and the page uses the update on its next load. It only runs when the page requests a file. It has no timers, background sync or push. The one risk is a stale version after a deploy if the version number isn't bumped. A one-line `CACHE_VERSION` constant in `sw.js` handles that.

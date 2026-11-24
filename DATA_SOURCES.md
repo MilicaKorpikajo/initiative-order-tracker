@@ -114,6 +114,8 @@ Researched on 2026-11-24. Every claim below comes from inspecting the repositori
 1. **License: AGPL-3.0**, matching GHS, with credit in the README.
 2. **Spoilers: no room-by-room hiding.** Players need every monster's ability deck and figures at setup anyway, so the whole scenario's monster list is not a spoiler. All of a scenario's monster plates are added when it is selected, starting in the inactive area. The `rooms` data is not needed and is left out of the bundle. The only remaining spoiler concern is the 11 GH scenario *names* flagged `spoiler: true`. Showing the number only for those is optional.
 3. **One plate per monster type.** This is how the game works: every Ooze acts on the Ooze initiative. GHS's `deck` field only matters where two different types use the same ability-card design in one scenario. That happens in 7 GH scenarios: #62, #75, #78, #87, #88 and #92 (twice). Example: #92 has Bandit, City and Inox Guards. The app keeps them as separate plates, and players can drag them next to each other if they act together.
+4. **Gloomhaven 1st edition only:** the 95 main scenarios from GHS `data/gh`. Skip anything with `solo` or `group` set, which covers the solo scenarios and the random dungeon. Keep #55 Foggy Thicket even though it has no monsters, since the tracker still orders the characters. **Never** read from `data/gh2e`. The build script should check that `edition === "gh"` for every file it includes and fail otherwise.
+5. **Offline: yes**, through a small versioned service worker. See ARCHITECTURE.md §9.
 
 ## Sources
 
