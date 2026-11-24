@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+# local checkout of upstream data used by scripts/build-data.mjs
+vendor/
+*.log
