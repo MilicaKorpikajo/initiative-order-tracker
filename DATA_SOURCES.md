@@ -81,6 +81,8 @@ Researched on 2026-11-24. Every claim below comes from inspecting the repositori
 
 ## Spoiler-avoidance approach (possible with GHS room data)
 
+> Not adopted. See "Decisions" below: the full monster list is known at setup anyway, so `rooms` will be left out of the bundled JSON.
+
 - At setup, show **only the monster types in the initial room** (`rooms[]` with `initial: true`).
 - Keep the remaining types in an **"Unrevealed (n)" group** that shows only a count. Tapping "Reveal" when a door opens shows a chooser.
   - Simplest form: the chooser lists the room refs the data gives, such as "G1b", which match the map-tile labels players see on the board.
@@ -107,11 +109,11 @@ Researched on 2026-11-24. Every claim below comes from inspecting the repositori
 4. **Runtime:** a single `fetch('data/scenarios.json')` from the app's own origin, cached by the browser or an optional service worker. No third-party requests.
 5. **Fallback:** a "custom plate" control for spawned or section-only monsters.
 
-## Decisions needed from you
+## Decisions (2026-11-24)
 
-1. **License:** AGPL-3.0 for the repo, or MIT and ask the GHS maintainer?
-2. **Spoilers:** reveal by room ref, or one plate at a time?
-3. **Shared ability decks:** check the rule before deciding plates per type or per deck.
+1. **License: AGPL-3.0**, matching GHS, with credit in the README.
+2. **Spoilers: no room-by-room hiding.** Players need every monster's ability deck and figures at setup anyway, so the whole scenario's monster list is not a spoiler. All of a scenario's monster plates are added when it is selected, starting in the inactive area. The `rooms` data is not needed and is left out of the bundle. The only remaining spoiler concern is the 11 GH scenario *names* flagged `spoiler: true`. Showing the number only for those is optional.
+3. **One plate per monster type.** This is how the game works: every Ooze acts on the Ooze initiative. GHS's `deck` field only matters where two different types use the same ability-card design in one scenario. That happens in 7 GH scenarios: #62, #75, #78, #87, #88 and #92 (twice). Example: #92 has Bandit, City and Inox Guards. The app keeps them as separate plates, and players can drag them next to each other if they act together.
 
 ## Sources
 

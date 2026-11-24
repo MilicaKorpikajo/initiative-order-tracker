@@ -152,9 +152,15 @@ Modules stay small and single-purpose. Only `state.js` changes state. `drag.js` 
 - No backend, accounts or sync between devices. One device sits on the table.
 - No monster stats, health tracking or ability cards. That is what full companion apps are for.
 
-## 9. Open questions for you
+## 9. Decisions and open questions
+
+Decided on 2026-11-24 (details in [DATA_SOURCES.md](DATA_SOURCES.md#decisions-2026-11-24)):
+
+- **License:** AGPL-3.0.
+- **Spoilers:** all of a scenario's monster plates are shown at setup, in the inactive area. There is no hiding by room.
+- **Plates:** one per monster type.
+
+Still open:
 
 1. Which editions to support first: GH1e only, or also Jaws of the Lion or Frosthaven?
-2. Whether to show unrevealed monster names at setup, or hide them (spoilers).
-3. The license for this repo, which depends on the data source's license (§5).
-4. Whether to add an offline service worker in v1 or later.
+2. Whether to add an offline service worker in v1 or later.
