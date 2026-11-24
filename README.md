@@ -55,7 +55,6 @@ It's a static site, so any static host works: GitHub Pages, Netlify or Cloudflar
 - **Scenario and monster names** are derived from the game data of [Gloomhaven Secretariat](https://github.com/Lurkars/gloomhavensecretariat) by Lurkars (AGPL-3.0). See [DATA_SOURCES.md](DATA_SOURCES.md).
 - **Class icons** ([icons/classes/](icons/classes/)) come from the [Gloomhaven Creator Pack](https://boardgamegeek.com/thread/1733586/files-for-creation) by Isaac Childres, under CC BY-NC-SA 4.0. See [icons/classes/LICENSE.md](icons/classes/LICENSE.md).
 - **Font:** Pirata One by Rodrigo Fuenzalida and Nicolas Massi, in the version shipped with the Gloomhaven Creator Pack, under the SIL Open Font License 1.1. See [fonts/OFL.txt](fonts/OFL.txt).
-- **Colours:** the [Apricot palette](https://lospec.com/palette-list/apricot) by Chase Stemel.
 
 ## License
 

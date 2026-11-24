@@ -4,7 +4,7 @@
 // RELEASE CHECKLIST: bump CACHE_VERSION whenever any file below changes,
 // otherwise returning players keep the old version.
 
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 const CACHE = `ghit-v${CACHE_VERSION}`;
 const FILES = [
   './',

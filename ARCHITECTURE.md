@@ -1,6 +1,6 @@
 # Architecture proposal
 
-Status: **v1 implemented, with class icons, the Pirata One font and the Apricot palette.** This document began as the pre-code proposal and has been updated to match what was built.
+Status: **v1 implemented, with class icons, the Pirata One font and a dark autumn palette (colour tokens at the top of `css/app.css`).** This document began as the pre-code proposal and has been updated to match what was built.
 
 ## 1. Goals recap
 

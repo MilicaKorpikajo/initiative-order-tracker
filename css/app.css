@@ -1,8 +1,8 @@
 /* Gloomhaven Initiative Tracker. No animations or transitions on purpose.
  *
- * Colours: the Apricot palette by Chase Stemel (lospec.com/palette-list/apricot).
- * Text contrast (WCAG): cream on dark 13.9, cream on brown 6.9, salmon on dark 5.2,
- * dark on peach 7.1.
+ * "Gloomhaven autumn" palette: night, umber and oxblood browns with parchment
+ * text and burnished amber. Text contrast (WCAG): parchment on oxblood 11.1,
+ * brass on night 6.9, amber on oxblood 5.8, night on amber 7.4.
  */
 
 @font-face {
@@ -13,20 +13,25 @@
 
 :root {
   color-scheme: dark;
-  /* Apricot palette */
-  --apricot-0: #3b2524; /* darkest: page */
-  --apricot-1: #735044; /* brown: nameplates, panels */
-  --apricot-2: #b76b53; /* rust: borders, custom monsters */
-  --apricot-3: #e48362; /* salmon: monsters, secondary text */
-  --apricot-4: #ff9f72; /* peach: headings, highlights, bosses */
-  --apricot-5: #ffffd5; /* cream: main text, characters */
+  /* Palette */
+  --night: #140e0c;     /* page */
+  --umber: #241814;     /* panels, inputs */
+  --oxblood: #3b1f1a;   /* nameplates */
+  --bark: #5c3b2b;      /* outlines */
+  --parchment: #ecdcb9; /* main text */
+  --brass: #b8956a;     /* secondary text, borders */
+  --amber: #d9913f;     /* headings, highlights, bosses */
+  --moss: #9aa864;      /* characters */
+  --rust: #c0573a;      /* monsters */
+  --plum: #a8789a;      /* custom monsters */
 
-  --bg: var(--apricot-0);
-  --surface: var(--apricot-1);
-  --border: var(--apricot-2);
-  --text: var(--apricot-5);
-  --muted: var(--apricot-3);
-  --accent: var(--apricot-4);
+  --bg: var(--night);
+  --panel: var(--umber);
+  --surface: var(--oxblood);
+  --border: var(--brass);
+  --text: var(--parchment);
+  --muted: var(--brass);
+  --accent: var(--amber);
 
   --display: "Pirata One", "Palatino Linotype", Palatino, Georgia, serif;
   --radius: 10px;
@@ -34,7 +39,9 @@
 
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.4;
-  background: var(--bg);
+  /* A static candle-lit glow at the top; painted once, no repaint on scroll. */
+  background: radial-gradient(ellipse 120% 60% at 50% 0%, #2c1b14 0%, var(--night) 70%) no-repeat var(--night);
+  min-height: 100%;
   color: var(--text);
 }
 
@@ -86,7 +93,8 @@ a { color: var(--accent); }
 .scenario-title { font-family: var(--display); font-size: 1.35rem; color: var(--text); }
 
 .setup {
-  background: var(--surface);
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--bark);
   border-radius: var(--radius);
   margin-bottom: 1.25rem;
 }
@@ -117,7 +125,7 @@ input, select, button {
   color: var(--text);
   min-height: var(--tap);
   border-radius: 8px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--bark);
   background: var(--bg);
   padding: 0.4rem 0.75rem;
 }
@@ -130,7 +138,7 @@ button:disabled { cursor: default; opacity: 0.35; }
 form button[type="submit"] {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--apricot-0);
+  color: var(--night);
   padding-inline: 1.25rem;
 }
 
@@ -165,7 +173,7 @@ button.danger { color: var(--accent); border-color: var(--accent); }
 }
 
 .plates:empty {
-  border: 2px dashed var(--surface);
+  border: 2px dashed var(--bark);
   border-radius: var(--radius);
   display: grid;
   place-items: center;
@@ -177,30 +185,31 @@ button.danger { color: var(--accent); border-color: var(--accent); }
 /* --- Nameplates ---------------------------------------------------------- */
 
 .plate {
-  --kind: var(--apricot-3);
+  --kind: var(--rust);
   display: flex;
   align-items: center;
   gap: 0.25rem;
   min-height: 3.5rem;
   padding: 0.25rem 0.25rem 0.25rem 0;
-  background: var(--surface);
+  background: linear-gradient(180deg, #45251f, var(--oxblood) 60%);
   color: var(--text);
   border-left: 6px solid var(--kind);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
   border-radius: var(--radius);
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
 
-.plate[data-kind="character"] { --kind: var(--apricot-5); }
-.plate[data-kind="custom"] { --kind: var(--apricot-2); }
-.plate:has(.badge:not([hidden])) { --kind: var(--apricot-4); }
+.plate[data-kind="character"] { --kind: var(--moss); }
+.plate[data-kind="custom"] { --kind: var(--plum); }
+.plate:has(.badge:not([hidden])) { --kind: var(--amber); }
 
 /* Inactive plates are quieter: dark with an outline. */
 #inactive > .plate {
   background: var(--bg);
   color: var(--muted);
-  box-shadow: inset 0 0 0 1px var(--surface);
+  box-shadow: inset 0 0 0 1px var(--bark);
 }
 
 /* Position numbers in the initiative order. */
@@ -267,8 +276,8 @@ button.danger { color: var(--accent); border-color: var(--accent); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--apricot-0);
-  background: var(--apricot-4);
+  color: var(--night);
+  background: var(--amber);
   border-radius: 999px;
   padding: 0.1rem 0.55rem;
 }
@@ -288,7 +297,7 @@ button.icon {
   place-items: center;
 }
 
-button.icon:hover:not(:disabled) { background: rgb(0 0 0 / 0.18); }
+button.icon:hover:not(:disabled) { background: rgb(0 0 0 / 0.25); }
 
 button.icon svg {
   width: 22px;
