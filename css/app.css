@@ -376,7 +376,7 @@ body.is-dragging { cursor: grabbing; }
 .area-head h2 { margin-bottom: 0; }
 
 .porthole {
-  --size: 4.75rem;
+  --size: 5.4rem;
   position: relative;
   flex: none;
   width: var(--size);
@@ -392,7 +392,7 @@ body.is-dragging { cursor: grabbing; }
     radial-gradient(circle 0.19rem at 20.3% 20.3%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
     radial-gradient(circle 0.19rem at 50% 8%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
     radial-gradient(circle 0.19rem at 79.7% 20.3%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle closest-side, transparent 80%, rgb(20 12 6 / 0.55) 81.5%, rgb(255 225 170 / 0.18) 83.5%, transparent 85%),
+    radial-gradient(circle closest-side, transparent 72%, rgb(20 12 6 / 0.55) 73.5%, rgb(255 225 170 / 0.18) 75.5%, transparent 77%),
     radial-gradient(circle at 34% 28%, var(--bronze-hi), var(--bronze) 42%, var(--bronze-lo) 78%, #22170d);
   box-shadow:
     0 4px 10px rgb(0 0 0 / 0.6),
@@ -403,11 +403,12 @@ body.is-dragging { cursor: grabbing; }
 /* The recessed window. Also the drag handle when unlocked. */
 .porthole-dial {
   position: absolute;
-  inset: 19%;
+  inset: 14.5%;
   border-radius: 50%;
   display: grid;
   align-content: center;
   justify-items: center;
+  gap: 0.2rem;
   background: radial-gradient(circle at 50% 30%, #2b1d15, #0c0806 72%);
   box-shadow:
     0 0 0 2px #1a110a,
@@ -419,8 +420,28 @@ body.is-dragging { cursor: grabbing; }
   -webkit-touch-callout: none;
 }
 
+/* Old glass: a curved reflection, a few scratches, a smudge and a hazy,
+   yellowed edge. Sits over the number; touches pass through. */
+.porthole-dial::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    linear-gradient(121deg, transparent 49.4%, rgb(255 240 215 / 0.32) 49.8%, transparent 50.4%) 18% 70% / 55% 34% no-repeat,
+    linear-gradient(28deg, transparent 49.2%, rgb(255 240 215 / 0.22) 49.7%, transparent 50.3%) 78% 30% / 38% 26% no-repeat,
+    linear-gradient(97deg, transparent 49.3%, rgb(255 240 215 / 0.18) 49.8%, transparent 50.3%) 60% 88% / 30% 12% no-repeat,
+    linear-gradient(152deg, transparent 49.5%, rgb(255 240 215 / 0.16) 49.9%, transparent 50.3%) 30% 20% / 24% 18% no-repeat,
+    radial-gradient(ellipse 34% 22% at 66% 62%, rgb(225 205 165 / 0.07), transparent 70%),
+    radial-gradient(ellipse 62% 34% at 36% 20%, rgb(255 238 210 / 0.15), transparent 72%),
+    radial-gradient(circle closest-side, transparent 60%, rgb(200 170 120 / 0.09) 84%, rgb(70 48 24 / 0.32) 100%),
+    /* fine grain and cloudy wear: a tiny SVG noise tile, rendered once */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .92 0 0 0 0 .78 0 0 0 .11 0'/%3E%3C/filter%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9 0 0 0 0 .82 0 0 0 0 .65 0 0 0 .2 -.07'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E") center / 100% 100%;
+}
+
 .porthole-label {
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.16em;
@@ -432,13 +453,13 @@ body.is-dragging { cursor: grabbing; }
 .porthole-window {
   display: grid;
   place-items: center;
-  height: 1.75rem;
+  height: 1.9rem;
   overflow: hidden;
 }
 
 .porthole-number {
   font-family: var(--display);
-  font-size: 1.85rem;
+  font-size: 1.95rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   color: var(--ivory);
@@ -497,7 +518,7 @@ body.is-dragging { cursor: grabbing; }
   --lever-end: 3.25rem; /* room below the last plate for the end-of-round notch */
   display: grid;
   grid-template-columns: var(--lever-w) minmax(0, 1fr);
-  column-gap: 0.45rem;
+  column-gap: 0.9rem;
   padding-bottom: var(--lever-end);
 }
 
@@ -597,17 +618,17 @@ body.is-dragging { cursor: grabbing; }
 /* A brass pointer reaching across to the current nameplate. */
 .lever-pointer {
   position: absolute;
-  left: calc(100% + 3px);
+  left: calc(100% + 4px);
   top: 50%;
-  width: 0.7rem;
-  height: 0.7rem;
-  margin-top: -0.35rem;
-  clip-path: polygon(0 18%, 100% 50%, 0 82%);
-  background: linear-gradient(180deg, var(--bronze-hi), var(--bronze) 60%, var(--bronze-lo));
+  width: 0.35rem;
+  height: 0.5rem;
+  margin-top: -0.25rem;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  background: var(--bronze);
 }
 
 .lever-knob.is-pulling { cursor: grabbing; transition: none; }
-.lever-knob.is-engaged .lever-pointer { background: var(--amber); }
+.lever-knob.is-engaged .lever-pointer { background: var(--bronze-hi); }
 .lever-knob.no-anim { transition: none; }
 .lever.is-returning .lever-knob { transition-duration: 450ms; transition-timing-function: cubic-bezier(0.25, 1.15, 0.5, 1); }
 .lever.is-empty .lever-knob { visibility: hidden; }
@@ -634,9 +655,10 @@ body.is-dragging { cursor: grabbing; }
 /* Phones (iPhone 12 is 390px wide): the lever takes some width, so the
    nameplates' buttons and grip get a little narrower to leave room for names. */
 @media (max-width: 26rem) {
-  .tracker { --lever-w: 2.45rem; column-gap: 0.35rem; }
-  #active > .plate > .grip { width: 3rem; padding-left: 1.9rem; }
-  #active > .plate > .grip::before { left: 0.45rem; }
+  .tracker { --lever-w: 2.45rem; column-gap: 0.75rem; }
+  /* The number alone is the drag handle: no dots, a narrower plate. */
+  #active > .plate > .grip { width: 2.35rem; padding: 0; background: none; }
+  #active > .plate > .grip::before { left: 50%; transform: translate(-50%, -50%); }
   #active button.icon { width: 2.5rem; }
   #active .name { font-size: 1.3rem; }
 }
