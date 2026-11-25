@@ -32,8 +32,6 @@
   --walnut: #4f2e18;
   --walnut-hi: #6b4124;
   --ivory: #f1e4c6;
-  /* Fog in the porthole glass: a tiny SVG noise tile, rendered once. */
-  --fog: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9 0 0 0 0 .86 0 0 0 0 .78 0 0 0 .55 -.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E");
 
   --bg: var(--night);
   --panel: var(--umber);
@@ -399,22 +397,12 @@ body.is-dragging { cursor: grabbing; }
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
-  /* Eight rivets, an engraved line, and the cast bronze rim. Painted once. */
-  background:
-    radial-gradient(circle 0.19rem at 92% 50%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 79.7% 79.7%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 50% 92%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 20.3% 79.7%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 8% 50%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 20.3% 20.3%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 50% 8%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 79.7% 20.3%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle closest-side, transparent 72%, rgb(20 12 6 / 0.55) 73.5%, rgb(255 225 170 / 0.18) 75.5%, transparent 77%),
-    radial-gradient(circle at 40% 30%, #57432c, #3b2c1d 55%, #241a10);
+  /* A plain, dark iron rim, shaped only by light and shadow. */
+  background: radial-gradient(circle at 40% 30%, #2a1f17, #1a120d 70%);
   box-shadow:
     0 4px 10px rgb(0 0 0 / 0.6),
-    inset 0 0 0 1px rgb(184 149 106 / 0.4),
-    inset 0 -2px 3px rgb(0 0 0 / 0.5);
+    inset 0 1px 1px rgb(255 228 175 / 0.12),
+    inset 0 -2px 3px rgb(0 0 0 / 0.55);
 }
 
 /* The recessed window. Also the drag handle when unlocked. */
@@ -450,9 +438,7 @@ body.is-dragging { cursor: grabbing; }
     linear-gradient(28deg, transparent 49.2%, rgb(255 240 215 / 0.22) 49.7%, transparent 50.3%) 78% 30% / 38% 26% no-repeat,
     linear-gradient(97deg, transparent 49.3%, rgb(255 240 215 / 0.18) 49.8%, transparent 50.3%) 60% 88% / 30% 12% no-repeat,
     linear-gradient(152deg, transparent 49.5%, rgb(255 240 215 / 0.16) 49.9%, transparent 50.3%) 30% 20% / 24% 18% no-repeat,
-    var(--fog) 40% 60% / 100% 100%,
-    radial-gradient(ellipse 80% 45% at 50% 100%, rgb(215 200 170 / 0.12), transparent 75%),
-    radial-gradient(ellipse 34% 22% at 66% 62%, rgb(225 205 165 / 0.1), transparent 70%),
+    radial-gradient(ellipse 34% 22% at 66% 62%, rgb(225 205 165 / 0.07), transparent 70%),
     radial-gradient(ellipse 62% 34% at 36% 20%, rgb(255 238 210 / 0.15), transparent 72%),
     radial-gradient(circle closest-side, transparent 60%, rgb(200 170 120 / 0.09) 84%, rgb(70 48 24 / 0.32) 100%),
     /* fine grain and cloudy wear: a tiny SVG noise tile, rendered once */
@@ -546,14 +532,11 @@ body.is-dragging { cursor: grabbing; }
   position: relative;
   margin-bottom: calc(-1 * var(--lever-end));
   border-radius: 1.3rem;
-  background:
-    radial-gradient(circle 0.2rem at 50% 0.75rem, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.2rem at 50% calc(100% - 0.75rem), #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
-    linear-gradient(90deg, #1f160e, #3d2d1e 30%, #47351f 50%, #382919 72%, #1d150d);
+  background: linear-gradient(90deg, #1a120d, #2a1f17 50%, #1a120d);
   box-shadow:
-    0 2px 6px rgb(0 0 0 / 0.5),
-    inset 0 0 0 1px rgb(184 149 106 / 0.35),
-    inset 0 -2px 3px rgb(0 0 0 / 0.45);
+    0 4px 10px rgb(0 0 0 / 0.6),
+    inset 0 1px 1px rgb(255 228 175 / 0.12),
+    inset 0 -2px 3px rgb(0 0 0 / 0.55);
 }
 
 /* The recessed slot the handle slides in. */
@@ -612,12 +595,11 @@ body.is-dragging { cursor: grabbing; }
   background:
     radial-gradient(circle closest-side, transparent 54%, rgb(18 9 4 / 0.5) 57%, rgb(255 210 160 / 0.07) 60%, transparent 63%),
     radial-gradient(circle closest-side, transparent 70%, rgb(10 5 2 / 0.4)),
-    radial-gradient(circle at 45% 38%, #5c3a22, #42271a 60%, #28170c);
+    radial-gradient(circle at 45% 35%, #4a2e1c, #2e1b10 65%, #1c1009);
   box-shadow:
-    0 0 0 1px #140b05,
-    0 0 0 2.5px #4a3722,
-    0 0 0 3.5px #160e07,
-    0 4px 8px rgb(0 0 0 / 0.65),
+    0 0 0 2px #1a110a,
+    0 0 0 3px rgb(255 222 165 / 0.22),
+    0 4px 10px rgb(0 0 0 / 0.65),
     inset 0 -3px 5px rgb(0 0 0 / 0.55),
     inset 0 1px 1px rgb(255 220 170 / 0.1);
   transition: transform 220ms cubic-bezier(0.3, 1.45, 0.55, 1);
@@ -635,10 +617,9 @@ body.is-dragging { cursor: grabbing; }
 /* Pulled far enough to catch the next notch: the collar catches the light. */
 .lever-knob.is-engaged {
   box-shadow:
-    0 0 0 1px #140b05,
-    0 0 0 2.5px #8a6c44,
-    0 0 0 3.5px #160e07,
-    0 4px 8px rgb(0 0 0 / 0.65),
+    0 0 0 2px #1a110a,
+    0 0 0 3px rgb(255 222 165 / 0.55),
+    0 4px 10px rgb(0 0 0 / 0.65),
     inset 0 -3px 5px rgb(0 0 0 / 0.55),
     inset 0 1px 1px rgb(255 220 170 / 0.1);
 }
