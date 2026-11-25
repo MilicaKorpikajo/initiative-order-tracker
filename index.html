@@ -19,6 +19,8 @@
     <symbol id="i-out" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
     <symbol id="i-in" viewBox="0 0 24 24"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></symbol>
     <symbol id="i-remove" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5zM12 15v2"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 9.6-2M5 11h14v10H5zM12 15v2"/></symbol>
   </svg>
 
   <header class="top">
@@ -63,8 +65,28 @@
 
   <main id="board" class="board">
     <section class="area" aria-labelledby="active-heading">
-      <h2 id="active-heading">Initiative order</h2>
-      <ol id="active" class="plates" data-list="active" data-empty="Drag nameplates here"></ol>
+      <div class="area-head">
+        <div id="round" class="porthole">
+          <div class="porthole-dial" role="spinbutton" tabindex="0" aria-label="Round" aria-valuemin="1" aria-valuenow="1">
+            <span class="porthole-label" aria-hidden="true">Round</span>
+            <span class="porthole-window"><span class="porthole-number">1</span></span>
+          </div>
+          <button type="button" class="porthole-lock"><svg aria-hidden="true"><use href="#i-lock"/></svg></button>
+        </div>
+        <div>
+          <h2 id="active-heading">Initiative order</h2>
+          <p class="hint">Pull the lever down to end a turn</p>
+        </div>
+      </div>
+      <div class="tracker">
+        <div id="lever" class="lever is-empty">
+          <span class="lever-rail" aria-hidden="true"></span>
+          <span class="lever-notches" aria-hidden="true"></span>
+          <span class="lever-knob" role="slider" aria-orientation="vertical" aria-label="Turn lever"
+            aria-keyshortcuts="ArrowDown ArrowUp" tabindex="-1"><span class="lever-pointer"></span></span>
+        </div>
+        <ol id="active" class="plates" data-list="active" data-empty="Drag nameplates here"></ol>
+      </div>
     </section>
     <section class="area area-inactive" aria-labelledby="inactive-heading">
       <h2 id="inactive-heading">Inactive</h2>
@@ -87,6 +109,7 @@
       <span class="grip" aria-hidden="true"></span>
       <span class="class-icon" aria-hidden="true" hidden></span>
       <span class="name"></span>
+      <span class="turn-note visually-hidden"></span>
       <span class="badge" hidden>Boss</span>
       <span class="buttons">
         <button type="button" class="icon" data-action="up"><svg><use href="#i-up"/></svg></button>

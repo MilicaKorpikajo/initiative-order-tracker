@@ -4,7 +4,7 @@
 // RELEASE CHECKLIST: bump CACHE_VERSION whenever any file below changes,
 // otherwise returning players keep the old version.
 
-const CACHE_VERSION = 5;
+const CACHE_VERSION = 6;
 const CACHE = `ghit-v${CACHE_VERSION}`;
 const FILES = [
   './',
@@ -15,6 +15,9 @@ const FILES = [
   'js/render.js',
   'js/drag.js',
   'js/classes.js',
+  'js/turns.js',
+  'js/lever.js',
+  'js/round.js',
   'data/scenarios.json',
   'fonts/PirataOne-Gloomhaven.ttf',
   ...[

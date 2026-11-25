@@ -8,15 +8,21 @@
 //   plates:   { [id]: { id, kind: "character" | "monster", name, boss?, custom? } },
 //   active:   [id, ...],   // initiative order, top first
 //   inactive: [id, ...],   // defeated, not yet revealed, or parked
+//   round:    1,           // round counter, see turns.js
+//   turn:     { current, done, undo }, // whose turn it is, see turns.js
 // }
 // Every plate id is in exactly one of `active` / `inactive`.
+// Every change goes through normalizeTurn, so the turn always points at a plate
+// in the initiative order (or is null when the order is empty).
+
+import { emptyTurn, normalizeTurn, validateRound, validateTurn } from './turns.js';
 
 export const VERSION = 1;
 export const STORAGE_KEY = 'ghit:state';
 export const LISTS = ['active', 'inactive'];
 
 export function createState() {
-  return { version: VERSION, scenario: null, plates: {}, active: [], inactive: [] };
+  return { version: VERSION, scenario: null, plates: {}, active: [], inactive: [], round: 1, turn: emptyTurn() };
 }
 
 /** Which list a plate is in, or null. */
@@ -35,11 +41,11 @@ function cleanName(name) {
 }
 
 function withPlate(state, plate, list) {
-  return {
+  return normalizeTurn(state, {
     ...state,
     plates: { ...state.plates, [plate.id]: plate },
     [list]: [...state[list], plate.id],
-  };
+  });
 }
 
 /** Add a character at the end of the initiative order. */
@@ -60,12 +66,12 @@ export function removePlate(state, id) {
   if (!state.plates[id]) return state;
   const plates = { ...state.plates };
   delete plates[id];
-  return {
+  return normalizeTurn(state, {
     ...state,
     plates,
     active: state.active.filter((x) => x !== id),
     inactive: state.inactive.filter((x) => x !== id),
-  };
+  });
 }
 
 /**
@@ -80,13 +86,13 @@ export function movePlate(state, id, list, index) {
   const at = Math.max(0, Math.min(Number.isInteger(index) ? index : target.length, target.length));
   target.splice(at, 0, id);
   next[list] = target;
-  return next;
+  return normalizeTurn(state, next);
 }
 
 /**
  * Start (or restart) a scenario: keep characters (all back in the initiative
  * order), drop every monster plate, and add the scenario's monster types to
- * the inactive area.
+ * the inactive area. The round counter goes back to 1.
  *
  * @param scenario  { id, monsters: [monsterId] } or null to clear
  * @param monsterInfo  { [monsterId]: { name, boss? } }
@@ -106,7 +112,8 @@ export function setScenario(state, scenario, monsterInfo = {}) {
     inactive.push(id);
   }
 
-  return { ...state, scenario: scenario?.id ?? null, plates, active, inactive };
+  const next = { ...state, scenario: scenario?.id ?? null, plates, active, inactive, round: 1, turn: emptyTurn() };
+  return normalizeTurn(next, next);
 }
 
 // --- Persistence ------------------------------------------------------------
@@ -129,13 +136,17 @@ export function validate(data) {
   // Any plate missing from both lists goes to inactive rather than vanishing.
   for (const id of Object.keys(plates)) if (!seen.has(id)) inactive.push(id);
 
-  return {
+  // round and turn were added later: older saves get defaults.
+  const state = {
     version: VERSION,
     scenario: typeof data.scenario === 'string' ? data.scenario : null,
     plates,
     active,
     inactive,
+    round: validateRound(data.round),
+    turn: validateTurn(data.turn, plates),
   };
+  return normalizeTurn(state, state);
 }
 
 export function load(storage) {

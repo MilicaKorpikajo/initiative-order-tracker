@@ -4,6 +4,9 @@ import * as S from './state.js';
 import { renderLists, renderScenarioOptions, scenarioLabel } from './render.js';
 import { enableDrag } from './drag.js';
 import { suggestions } from './classes.js';
+import { advanceTurn, undoTurn, setRound } from './turns.js';
+import { createLever } from './lever.js';
+import { createRoundCounter } from './round.js';
 
 const $ = (selector) => document.querySelector(selector);
 const el = {
@@ -36,6 +39,8 @@ function render() {
   el.scenarioTitle.textContent = data ? scenarioLabel(findScenario(state.scenario)) : '';
   el.scenario.value = state.scenario ?? '';
   el.restart.disabled = !state.scenario;
+  lever.update(state);
+  roundCounter.show(state.round);
   restoreFocus();
 }
 
@@ -98,6 +103,29 @@ el.board.addEventListener('click', (event) => {
 });
 
 enableDrag(el.board, move);
+
+// --- Turn lever and round counter ----------------------------------------
+
+const nameOf = (id) => state.plates[id]?.name;
+
+const lever = createLever($('#lever'), el.lists.active, {
+  onAdvance() {
+    const { round, turn: { current } } = state;
+    const next = advanceTurn(state);
+    update(next, next.round !== round
+      ? `${nameOf(current)} done. Round ${next.round}: ${nameOf(next.turn.current)}'s turn.`
+      : `${nameOf(current)} done. ${nameOf(next.turn.current)}'s turn.`);
+  },
+  onUndo() {
+    const next = undoTurn(state);
+    if (next === state) return;
+    update(next, `Undone. Round ${next.round}: ${nameOf(next.turn.current)}'s turn again.`);
+  },
+});
+
+const roundCounter = createRoundCounter($('#round'), {
+  onChange: (round) => update(setRound(state, round), `Round ${Math.max(1, round)}.`),
+});
 
 // --- Setup -------------------------------------------------------------------
 

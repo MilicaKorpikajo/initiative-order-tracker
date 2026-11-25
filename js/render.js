@@ -2,6 +2,9 @@
 
 import { LISTS } from './state.js';
 import { findClass, iconUrl } from './classes.js';
+import { turnStatus } from './turns.js';
+
+const TURN_NOTES = { current: ', current turn', done: ', turn done' };
 
 const LABELS = {
   up: (name) => `Move ${name} up`,
@@ -15,11 +18,15 @@ function isRemovable(plate) {
   return plate.kind === 'character' || plate.custom === true;
 }
 
-function plateElement(template, plate, list, index, count) {
+function plateElement(template, plate, list, index, count, status) {
   const li = template.content.firstElementChild.cloneNode(true);
   li.dataset.id = plate.id;
   li.dataset.kind = plate.custom ? 'custom' : plate.kind;
   li.querySelector('.name').textContent = plate.name;
+  if (TURN_NOTES[status]) {
+    li.classList.add(`is-${status}`);
+    li.querySelector('.turn-note').textContent = TURN_NOTES[status];
+  }
   if (plate.boss) li.querySelector('.badge').hidden = false;
 
   const cls = plate.kind === 'character' ? findClass(plate.name) : null;
@@ -54,7 +61,7 @@ export function renderLists(state, lists, template) {
   for (const list of LISTS) {
     const ids = state[list];
     lists[list].replaceChildren(
-      ...ids.map((id, i) => plateElement(template, state.plates[id], list, i, ids.length)),
+      ...ids.map((id, i) => plateElement(template, state.plates[id], list, i, ids.length, turnStatus(state, id))),
     );
   }
 }
