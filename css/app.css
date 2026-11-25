@@ -192,8 +192,8 @@ button.danger { color: var(--accent); border-color: var(--accent); }
   .area-head-inactive { align-self: center; margin-bottom: 0.9rem; }
 
   /* Keep the round counter with its own heading, away from "Inactive". */
-  .board { column-gap: 3rem; }
-  .board .area-head { justify-content: flex-start; gap: 1.5rem; }
+  .board { column-gap: 4rem; }
+  .board .area-head { justify-content: flex-start; gap: 2.5rem; }
 }
 
 .area h2 { font-size: 1.8rem; line-height: 1.2; margin-bottom: 0.5rem; }
