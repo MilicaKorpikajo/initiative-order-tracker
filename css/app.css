@@ -632,6 +632,11 @@ body.is-dragging { cursor: grabbing; }
 .lever.is-returning .lever-knob { transition-duration: 450ms; transition-timing-function: cubic-bezier(0.25, 1.15, 0.5, 1); }
 .lever.is-empty .lever-knob { visibility: hidden; }
 
+/* With a mouse, click anywhere on the rail to slide the knob to the nearest notch. */
+@media (hover: hover) and (pointer: fine) {
+  .lever:not(.is-empty) { cursor: pointer; }
+}
+
 .lever-knob:focus-visible { outline-offset: 5px; }
 
 @media (prefers-reduced-motion: reduce) {

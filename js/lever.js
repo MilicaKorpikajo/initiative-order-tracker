@@ -24,6 +24,7 @@ export function createLever(root, list, { onAdvance, onUndo }) {
   let y = null;       // knob centre, px from the top of the lever
   let pull = null;    // drag in progress
   let round = null;
+  let hover = null;   // stop plan while a mouse is over the rail
 
   // --- Layout -----------------------------------------------------------
 
@@ -80,6 +81,7 @@ export function createLever(root, list, { onAdvance, onUndo }) {
     state = next;
     round = next.round;
     root.classList.toggle('is-returning', wrapped);
+    hover = null;
     layout();
     describe();
   }
@@ -155,9 +157,9 @@ export function createLever(root, list, { onAdvance, onUndo }) {
     for (const el of marked) el.classList.add(cls);
   }
 
-  knob.addEventListener('pointerdown', (event) => {
-    if (pull || y === null || !event.isPrimary || event.button !== 0) return;
-    event.preventDefault();
+  // Where the knob can go from here: distances (px) to each stop below and
+  // above it, and the plates that reaching each stop would finish or reopen.
+  function plan() {
     const { centres, end } = stops();
     const at = (id) => centres[state.active.indexOf(id)];
 
@@ -183,8 +185,14 @@ export function createLever(root, list, { onAdvance, onUndo }) {
       reopening.push(entry.id);
       last = c;
     }
+    return { down, up, finishing, reopening };
+  }
 
-    pull = { pointerId: event.pointerId, startY: event.clientY, down, up, finishing, reopening, dy: 0, count: 0 };
+  knob.addEventListener('pointerdown', (event) => {
+    if (pull || y === null || !event.isPrimary || event.button !== 0) return;
+    event.preventDefault();
+    pull = { pointerId: event.pointerId, startY: event.clientY, ...plan(), dy: 0, count: 0 };
+    hover = null;
     try { knob.setPointerCapture(event.pointerId); } catch { /* pointer already gone */ }
     knob.classList.add('is-pulling');
   });
@@ -222,6 +230,45 @@ export function createLever(root, list, { onAdvance, onUndo }) {
     else if (commit && count < 0) onUndo(-count);
     else moveKnob(y, true); // not far enough (or cancelled): spring back, nothing changes
   }
+
+  // --- Mouse: click a notch to slide there -----------------------------
+  // Only for a mouse: on touch screens a stray tap on the rail must not end turns.
+
+  // How many turns a click at clientY means: the nearest stop, + down / - up.
+  function clickTarget(clientY) {
+    hover ??= plan();
+    const d = clientY - root.getBoundingClientRect().top - y;
+    const options = [0, ...(d >= 0 ? hover.down : hover.up)];
+    const dist = Math.abs(d);
+    let best = 0;
+    options.forEach((stop, i) => { if (Math.abs(dist - stop) < Math.abs(dist - options[best])) best = i; });
+    return d >= 0 ? best : -best;
+  }
+
+  function preview(count) {
+    if (count > 0) mark(hover.finishing.slice(0, count), 'will-finish');
+    else mark(hover.reopening.slice(0, -count), 'will-reopen');
+  }
+
+  root.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'mouse' || pull || y === null || event.target.closest('.lever-knob')) return;
+    preview(clickTarget(event.clientY));
+  });
+
+  root.addEventListener('pointerleave', () => {
+    hover = null;
+    if (!pull) mark([], '');
+  });
+
+  root.addEventListener('pointerdown', (event) => {
+    if (event.pointerType !== 'mouse' || event.button !== 0 || pull || y === null || event.target.closest('.lever-knob')) return;
+    event.preventDefault();
+    const count = clickTarget(event.clientY);
+    hover = null;
+    mark([], '');
+    if (count > 0) onAdvance(count);
+    else if (count < 0) onUndo(-count);
+  });
 
   knob.addEventListener('pointerup', (event) => pull?.pointerId === event.pointerId && release(true));
   knob.addEventListener('pointercancel', () => release(false));
