@@ -26,12 +26,16 @@
   --rust: #c0573a;      /* monsters */
   --plum: #a8789a;      /* custom monsters */
   /* The mechanism: aged bronze, dark walnut, ivory numerals */
-  --bronze-hi: #b08a58;
-  --bronze: #7a5a36;
-  --bronze-lo: #3d2a19;
-  --walnut: #6a3d1f;
-  --walnut-hi: #8a5630;
+  --bronze-hi: #96784e;
+  --bronze: #664c30;
+  --bronze-lo: #33241a;
+  --walnut: #4f2e18;
+  --walnut-hi: #6b4124;
   --ivory: #f1e4c6;
+  /* Age: tiny SVG noise tiles, rendered once by the browser and cached. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .06 0 0 0 0 .04 0 0 0 0 .02 0 0 0 1.5 -.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E");
+  --tarnish: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .07 0 0 0 0 .04 0 0 0 2.2 -1.0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E");
+  --woodgrain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018 .35' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .13 0 0 0 0 .06 0 0 0 0 .02 0 0 0 1.8 -.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E");
 
   --bg: var(--night);
   --panel: var(--umber);
@@ -384,19 +388,21 @@ body.is-dragging { cursor: grabbing; }
   border-radius: 50%;
   /* Eight rivets, an engraved line, and the cast bronze rim. Painted once. */
   background:
-    radial-gradient(circle 0.19rem at 92% 50%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 79.7% 79.7%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 50% 92%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 20.3% 79.7%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 8% 50%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 20.3% 20.3%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 50% 8%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.19rem at 79.7% 20.3%, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 92% 50%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 79.7% 79.7%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 50% 92%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 20.3% 79.7%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 8% 50%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 20.3% 20.3%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 50% 8%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.19rem at 79.7% 20.3%, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
     radial-gradient(circle closest-side, transparent 72%, rgb(20 12 6 / 0.55) 73.5%, rgb(255 225 170 / 0.18) 75.5%, transparent 77%),
-    radial-gradient(circle at 34% 28%, var(--bronze-hi), var(--bronze) 42%, var(--bronze-lo) 78%, #22170d);
+    var(--grain) center / 64px,
+    var(--tarnish) 30% 40% / 128px,
+    radial-gradient(circle at 34% 28%, var(--bronze-hi), var(--bronze) 42%, var(--bronze-lo) 78%, #1d140c);
   box-shadow:
     0 4px 10px rgb(0 0 0 / 0.6),
-    inset 0 1px 1px rgb(255 228 175 / 0.35),
+    inset 0 1px 1px rgb(255 228 175 / 0.18),
     inset 0 -2px 3px rgb(0 0 0 / 0.55);
 }
 
@@ -518,7 +524,7 @@ body.is-dragging { cursor: grabbing; }
   --lever-end: 3.25rem; /* room below the last plate for the end-of-round notch */
   display: grid;
   grid-template-columns: var(--lever-w) minmax(0, 1fr);
-  column-gap: 0.9rem;
+  column-gap: 1.4rem;
   padding-bottom: var(--lever-end);
 }
 
@@ -528,13 +534,15 @@ body.is-dragging { cursor: grabbing; }
   margin-bottom: calc(-1 * var(--lever-end));
   border-radius: 1.3rem;
   background:
-    radial-gradient(circle 0.2rem at 50% 0.75rem, #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    radial-gradient(circle 0.2rem at 50% calc(100% - 0.75rem), #dcbb88, #7d5e36 0.11rem, #24180d 0.17rem, transparent 0.2rem),
-    repeating-linear-gradient(180deg, rgb(255 235 200 / 0.025) 0 1px, transparent 1px 3px),
-    linear-gradient(90deg, #2a1d12, var(--bronze) 28%, #8a6a42 50%, #5e4429 74%, #251910);
+    radial-gradient(circle 0.2rem at 50% 0.75rem, #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    radial-gradient(circle 0.2rem at 50% calc(100% - 0.75rem), #a88d62, #6a5133 0.11rem, #1f150c 0.17rem, transparent 0.2rem),
+    var(--grain) center / 64px,
+    var(--tarnish) 0 0 / 128px,
+    repeating-linear-gradient(180deg, rgb(255 235 200 / 0.02) 0 1px, transparent 1px 3px),
+    linear-gradient(90deg, #1e150d, #4f3a25 28%, #634a2f 50%, #47341f 74%, #1b130b);
   box-shadow:
     0 2px 6px rgb(0 0 0 / 0.5),
-    inset 0 1px 0 rgb(255 228 175 / 0.25),
+    inset 0 1px 0 rgb(255 228 175 / 0.12),
     inset 0 -2px 3px rgb(0 0 0 / 0.5),
     inset 0 0 0 1px rgb(20 12 6 / 0.6);
 }
@@ -593,17 +601,19 @@ body.is-dragging { cursor: grabbing; }
   user-select: none;
   -webkit-user-select: none;
   background:
-    radial-gradient(circle closest-side, transparent 52%, rgb(28 14 6 / 0.55) 56%, rgb(255 210 160 / 0.16) 60%, transparent 64%),
-    radial-gradient(circle at 36% 30%, rgb(255 222 180 / 0.38), transparent 42%),
-    repeating-radial-gradient(ellipse 150% 90% at 18% 120%, transparent 0 3px, rgb(40 18 6 / 0.22) 3.5px 4.5px, transparent 5px 7px),
-    radial-gradient(circle at 50% 40%, var(--walnut-hi), var(--walnut) 55%, #3e2111);
+    radial-gradient(circle closest-side, transparent 54%, rgb(18 9 4 / 0.5) 57%, rgb(255 210 160 / 0.07) 60%, transparent 63%),
+    radial-gradient(circle at 40% 32%, rgb(255 222 180 / 0.1), transparent 55%),
+    radial-gradient(circle closest-side, transparent 70%, rgb(10 5 2 / 0.45)),
+    var(--grain) center / 48px,
+    var(--woodgrain) 30% 40% / 72px,
+    radial-gradient(circle at 50% 42%, var(--walnut-hi), var(--walnut) 55%, #2a170b);
   box-shadow:
-    0 0 0 1px #1c1009,
-    0 0 0 3.5px var(--bronze),
-    0 0 0 4.5px #20150c,
+    0 0 0 1px #140b05,
+    0 0 0 2.5px #4a3722,
+    0 0 0 3.5px #160e07,
     0 4px 8px rgb(0 0 0 / 0.65),
-    inset 0 -3px 5px rgb(0 0 0 / 0.5),
-    inset 0 2px 2px rgb(255 220 170 / 0.22);
+    inset 0 -3px 5px rgb(0 0 0 / 0.55),
+    inset 0 1px 1px rgb(255 220 170 / 0.1);
   transition: transform 220ms cubic-bezier(0.3, 1.45, 0.55, 1);
 }
 
@@ -615,20 +625,17 @@ body.is-dragging { cursor: grabbing; }
   border-radius: 50%;
 }
 
-/* A brass pointer reaching across to the current nameplate. */
-.lever-pointer {
-  position: absolute;
-  left: calc(100% + 4px);
-  top: 50%;
-  width: 0.35rem;
-  height: 0.5rem;
-  margin-top: -0.25rem;
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
-  background: var(--bronze);
-}
-
 .lever-knob.is-pulling { cursor: grabbing; transition: none; }
-.lever-knob.is-engaged .lever-pointer { background: var(--bronze-hi); }
+/* Pulled far enough to catch the next notch: the collar catches the light. */
+.lever-knob.is-engaged {
+  box-shadow:
+    0 0 0 1px #140b05,
+    0 0 0 2.5px #8a6c44,
+    0 0 0 3.5px #160e07,
+    0 4px 8px rgb(0 0 0 / 0.65),
+    inset 0 -3px 5px rgb(0 0 0 / 0.55),
+    inset 0 1px 1px rgb(255 220 170 / 0.1);
+}
 .lever-knob.no-anim { transition: none; }
 .lever.is-returning .lever-knob { transition-duration: 450ms; transition-timing-function: cubic-bezier(0.25, 1.15, 0.5, 1); }
 .lever.is-empty .lever-knob { visibility: hidden; }
@@ -655,7 +662,7 @@ body.is-dragging { cursor: grabbing; }
 /* Phones (iPhone 12 is 390px wide): the lever takes some width, so the
    nameplates' buttons and grip get a little narrower to leave room for names. */
 @media (max-width: 26rem) {
-  .tracker { --lever-w: 2.45rem; column-gap: 0.75rem; }
+  .tracker { --lever-w: 2.45rem; column-gap: 1.1rem; }
   /* The number alone is the drag handle: no dots, a narrower plate. */
   #active > .plate > .grip { width: 2.35rem; padding: 0; background: none; }
   #active > .plate > .grip::before { left: 50%; transform: translate(-50%, -50%); }
