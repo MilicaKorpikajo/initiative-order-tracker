@@ -1,18 +1,21 @@
 // The turn lever: a wooden knob on a brass rail beside the initiative order.
 // The knob sits beside the plate whose turn it is. Pull it down one notch to
-// finish that turn, push it up to undo. Knows nothing about the app: it reads
-// the state and calls onAdvance / onUndo.
+// finish that turn, or further to finish several (the bottom notch ends the
+// round); push it up to undo. The plates that will change are shown while you
+// drag, so nothing happens by surprise. Knows nothing about the app: it reads
+// the state and calls onAdvance(count) / onUndo(count).
 //
 // Stopping points are measured from the real nameplates after each render,
 // and again whenever the list changes size (ResizeObserver), so the knob stays
 // aligned with plates of any height, on any screen. No timers or loops: the
 // knob only moves on pointer events and via one CSS transition.
 
-import { nextInTurn, lastUndo } from './turns.js';
+import { remainingInTurn, undoPath } from './turns.js';
 
 const ENGAGE = 0.6;      // share of the way to the next stop that counts as a pull
 const END_TRAVEL = 44;   // px between the last plate and the end-of-round stop
-const OVERSHOOT = 8;     // px the knob can be pulled past a stop, with resistance
+const OVERSHOOT = 8;     // px the knob can be pulled past the last stop, with resistance
+const DETENT = 8;        // px around each notch where the knob is drawn towards it
 
 export function createLever(root, list, { onAdvance, onUndo }) {
   const knob = root.querySelector('.lever-knob');
@@ -104,11 +107,17 @@ export function createLever(root, list, { onAdvance, onUndo }) {
       `Round ${state.round}: ${plates[turn.current].name}'s turn, ${index + 1} of ${active.length}`);
   }
 
+  // Keyboard: arrows move one notch, End finishes the round, Home undoes back
+  // to the start of this round.
   knob.addEventListener('keydown', (event) => {
     if (!state?.turn.current) return;
-    const keys = { ArrowDown: onAdvance, ArrowRight: onAdvance, PageDown: onAdvance,
-      ArrowUp: onUndo, ArrowLeft: onUndo, PageUp: onUndo };
-    const action = keys[event.key];
+    const actions = {
+      ArrowDown: () => onAdvance(1), ArrowRight: () => onAdvance(1), PageDown: () => onAdvance(1),
+      ArrowUp: () => onUndo(1), ArrowLeft: () => onUndo(1), PageUp: () => onUndo(1),
+      End: () => onAdvance(remainingInTurn(state).length + 1),
+      Home: () => { const n = undoPath(state).findIndex((e) => e.done); onUndo(n === -1 ? undoPath(state).length : n); },
+    };
+    const action = actions[event.key];
     if (!action) return;
     event.preventDefault();
     if (!event.repeat) action();
@@ -116,22 +125,66 @@ export function createLever(root, list, { onAdvance, onUndo }) {
 
   // --- Pulling the knob -----------------------------------------------
 
-  // Past `max` the knob resists, then stops: one pull is one turn, however far you drag.
+  // Past the last stop the knob resists, then stops.
   const resist = (d, max) => (d <= max ? d : max + Math.min(OVERSHOOT, (d - max) * 0.25));
+
+  // How many stops a drag of `d` px has reached: each counts once the knob is
+  // most of the way from the previous stop to it.
+  function reached(d, distances) {
+    let count = 0;
+    let prev = 0;
+    for (const stop of distances) {
+      if (d < prev + (stop - prev) * ENGAGE) break;
+      count++;
+      prev = stop;
+    }
+    return count;
+  }
+
+  // Notches feel like notches: near one, the knob is drawn towards it.
+  function detent(d, distances) {
+    for (const stop of distances) if (Math.abs(d - stop) < DETENT) return stop + (d - stop) * 0.35;
+    return d;
+  }
+
+  // Show which plates a release would change: dimmed (to finish) or lit (to reopen).
+  let marked = [];
+  function mark(ids, cls) {
+    for (const el of marked) el.classList.remove('will-finish', 'will-reopen');
+    marked = ids.map((id) => list.querySelector(`:scope > .plate[data-id="${CSS.escape(id)}"]`)).filter(Boolean);
+    for (const el of marked) el.classList.add(cls);
+  }
 
   knob.addEventListener('pointerdown', (event) => {
     if (pull || y === null || !event.isPrimary || event.button !== 0) return;
     event.preventDefault();
     const { centres, end } = stops();
-    const index = state.active.indexOf(state.turn.current);
-    const next = nextInTurn(state);
-    const down = (next ? centres[state.active.indexOf(next)] : end) - y;
+    const at = (id) => centres[state.active.indexOf(id)];
 
-    const entry = lastUndo(state);
-    const prevAt = entry && !entry.done ? centres[state.active.indexOf(entry.id)] : null;
-    const up = !entry ? 0 : prevAt !== null && prevAt < y ? y - prevAt : END_TRAVEL; // round undo: push past the top
+    // Down: each plate still to act this round, then the end-of-round notch.
+    const remaining = remainingInTurn(state);
+    const down = [...remaining.map(at), end].map((c) => c - y);
+    down[0] = Math.max(down[0], 24);
+    const finishing = [state.turn.current, ...remaining];
 
-    pull = { pointerId: event.pointerId, startY: event.clientY, down: Math.max(down, 24), up, dy: 0, index };
+    // Up: each earlier turn, as long as it sits higher on the rail. Undoing the
+    // end of the last round (knob at the top) means pushing past the top.
+    const up = [];
+    const reopening = [];
+    let last = y;
+    for (const [i, entry] of undoPath(state).entries()) {
+      if (entry.done) {
+        if (i === 0) up.push(END_TRAVEL);
+        break;
+      }
+      const c = at(entry.id);
+      if (!(c < last)) break;
+      up.push(y - c);
+      reopening.push(entry.id);
+      last = c;
+    }
+
+    pull = { pointerId: event.pointerId, startY: event.clientY, down, up, finishing, reopening, dy: 0, count: 0 };
     try { knob.setPointerCapture(event.pointerId); } catch { /* pointer already gone */ }
     knob.classList.add('is-pulling');
   });
@@ -139,21 +192,35 @@ export function createLever(root, list, { onAdvance, onUndo }) {
   knob.addEventListener('pointermove', (event) => {
     if (!pull || event.pointerId !== pull.pointerId) return;
     const raw = event.clientY - pull.startY;
-    const dy = raw >= 0 ? resist(raw, pull.down) : -resist(-raw, pull.up || 4);
+    const { down, up } = pull;
+    let dy;
+    let count;
+    if (raw >= 0) {
+      dy = detent(resist(raw, down.at(-1)), down);
+      count = reached(raw, down);
+    } else {
+      dy = -detent(resist(-raw, up.at(-1) ?? 4), up);
+      count = -reached(-raw, up);
+    }
     pull.dy = dy;
     knob.style.transform = `translateY(${y + dy}px)`;
-    knob.classList.toggle('is-engaged', dy >= pull.down * ENGAGE || (pull.up > 0 && -dy >= pull.up * ENGAGE));
+    if (count === pull.count) return;
+    pull.count = count;
+    knob.classList.toggle('is-engaged', count !== 0);
+    if (count > 0) mark(pull.finishing.slice(0, count), 'will-finish');
+    else mark(pull.reopening.slice(0, -count), 'will-reopen');
   });
 
   function release(commit) {
     if (!pull) return;
-    const { dy, down, up, pointerId } = pull;
+    const { count, pointerId } = pull;
     pull = null;
     if (knob.hasPointerCapture(pointerId)) knob.releasePointerCapture(pointerId);
     knob.classList.remove('is-pulling', 'is-engaged');
-    if (commit && dy >= down * ENGAGE) onAdvance();
-    else if (commit && up > 0 && -dy >= up * ENGAGE) onUndo();
-    else moveKnob(y, true); // not far enough: spring back, nothing changes
+    mark([], '');
+    if (commit && count > 0) onAdvance(count);
+    else if (commit && count < 0) onUndo(-count);
+    else moveKnob(y, true); // not far enough (or cancelled): spring back, nothing changes
   }
 
   knob.addEventListener('pointerup', (event) => pull?.pointerId === event.pointerId && release(true));

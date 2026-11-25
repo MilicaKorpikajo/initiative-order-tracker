@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as S from '../js/state.js';
-import { advanceTurn, undoTurn, setRound, turnStatus, nextInTurn, lastUndo } from '../js/turns.js';
+import { advanceTurn, undoTurn, setRound, turnStatus, nextInTurn, lastUndo, remainingInTurn, advanceTurns, undoTurns, undoPath } from '../js/turns.js';
 
 // Three characters in the initiative order: c-1, c-2, c-3.
 function party() {
@@ -145,4 +145,30 @@ test('round and turn survive a save/load, and old saves get defaults', () => {
   store.set(S.STORAGE_KEY, JSON.stringify({ ...old, round: -3, turn: { current: 'nope', done: ['c-2', 'zz'], undo: 'x' } }));
   const repaired = S.load(storage);
   assert.deepEqual([repaired.round, repaired.turn.current, repaired.turn.done, repaired.turn.undo], [1, 'c-1', ['c-2'], []]);
+});
+
+test('one long pull can finish several turns, and stops at the end of the round', () => {
+  let s = party();
+  assert.deepEqual(remainingInTurn(s), ['c-2', 'c-3']);
+  s = advanceTurns(s, 2);
+  assert.deepEqual([s.round, s.turn.current, s.turn.done], [1, 'c-3', ['c-1', 'c-2']]);
+  s = advanceTurns(party(), 99); // pulled all the way down: exactly one new round
+  assert.deepEqual([s.round, s.turn.current, s.turn.done], [2, 'c-1', []]);
+});
+
+test('a multi-turn pull is undone one turn at a time or all at once', () => {
+  const start = party();
+  const s = advanceTurns(start, 3); // round 2
+  assert.deepEqual(undoPath(s).map((e) => e.id), ['c-3', 'c-2', 'c-1']);
+  assert.ok(undoPath(s)[0].done, 'the first undo goes back across the round boundary');
+  assert.deepEqual(undoTurns(s, 3), { ...start, turn: { ...start.turn, undo: [] } });
+  assert.equal(undoTurns(s, 1).turn.current, 'c-3');
+});
+
+test('remaining turns skip done plates and plates above the current one', () => {
+  let s = advanceTurn(S.addCustomMonster(party(), 'Bandit')); // c-2 current
+  s = S.movePlate(s, 'x-1', 'active', 0);
+  s = S.movePlate(s, 'c-1', 'active', 3); // a done plate moved to the bottom
+  assert.deepEqual(s.active, ['x-1', 'c-2', 'c-3', 'c-1']);
+  assert.deepEqual(remainingInTurn(s), ['c-3']);
 });

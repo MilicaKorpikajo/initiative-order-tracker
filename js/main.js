@@ -4,7 +4,7 @@ import * as S from './state.js';
 import { renderLists, renderScenarioOptions, scenarioLabel } from './render.js';
 import { enableDrag } from './drag.js';
 import { suggestions } from './classes.js';
-import { advanceTurn, undoTurn, setRound } from './turns.js';
+import { advanceTurns, undoTurns, setRound, remainingInTurn } from './turns.js';
 import { createLever } from './lever.js';
 import { createRoundCounter } from './round.js';
 
@@ -109,15 +109,18 @@ enableDrag(el.board, move);
 const nameOf = (id) => state.plates[id]?.name;
 
 const lever = createLever($('#lever'), el.lists.active, {
-  onAdvance() {
+  onAdvance(count = 1) {
     const { round, turn: { current } } = state;
-    const next = advanceTurn(state);
+    const next = advanceTurns(state, count);
+    if (next === state) return;
+    const finished = next.round !== round ? remainingInTurn(state).length + 1 : next.turn.done.length - state.turn.done.length;
+    const done = finished === 1 ? `${nameOf(current)} done.` : `${finished} turns done.`;
     update(next, next.round !== round
-      ? `${nameOf(current)} done. Round ${next.round}: ${nameOf(next.turn.current)}'s turn.`
-      : `${nameOf(current)} done. ${nameOf(next.turn.current)}'s turn.`);
+      ? `${done} Round ${next.round}: ${nameOf(next.turn.current)}'s turn.`
+      : `${done} ${nameOf(next.turn.current)}'s turn.`);
   },
-  onUndo() {
-    const next = undoTurn(state);
+  onUndo(count = 1) {
+    const next = undoTurns(state, count);
     if (next === state) return;
     update(next, `Undone. Round ${next.round}: ${nameOf(next.turn.current)}'s turn again.`);
   },

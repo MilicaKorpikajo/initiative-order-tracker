@@ -41,6 +41,50 @@ export function nextInTurn(state) {
   return active.slice(at + 1).find((id) => !turn.done.includes(id)) ?? null;
 }
 
+/** Plates still to act this round after the current one, in order. */
+export function remainingInTurn(state) {
+  const { active, turn } = state;
+  const at = active.indexOf(turn.current);
+  return at === -1 ? [] : active.slice(at + 1).filter((id) => !turn.done.includes(id));
+}
+
+/** Finish `count` turns in a row. Stops after the turn that ends the round. */
+export function advanceTurns(state, count) {
+  let next = state;
+  for (let i = 0; i < count; i++) {
+    const after = advanceTurn(next);
+    if (after === next) break;
+    const wrapped = after.round !== next.round;
+    next = after;
+    if (wrapped) break;
+  }
+  return next;
+}
+
+/** Undo `count` turns in a row. */
+export function undoTurns(state, count) {
+  let next = state;
+  for (let i = 0; i < count; i++) {
+    const before = undoTurn(next);
+    if (before === next) break;
+    next = before;
+  }
+  return next;
+}
+
+/** The undo entries successive undos would apply, newest first. */
+export function undoPath(state, max = 50) {
+  const path = [];
+  let s = state;
+  while (path.length < max) {
+    const entry = lastUndo(s);
+    if (!entry) break;
+    path.push(entry);
+    s = undoTurn(s);
+  }
+  return path;
+}
+
 /** The undo entry that would be applied, or null. */
 export function lastUndo(state) {
   const { undo } = state.turn;

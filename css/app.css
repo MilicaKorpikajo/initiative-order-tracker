@@ -374,6 +374,11 @@ body.is-dragging { cursor: grabbing; }
 #active > .plate.is-done { opacity: 0.6; }
 #active > .plate.is-done > .grip::before { color: var(--muted); }
 
+/* While the lever is pulled: plates a release would finish dim, and plates
+   pushing up would reopen light up again. */
+#active > .plate.will-finish { opacity: 0.6; }
+#active > .plate.is-done.will-reopen { opacity: 1; }
+
 #active > .plate.is-current {
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.35), inset 0 0 0 1px rgb(217 145 63 / 0.55);
 }
