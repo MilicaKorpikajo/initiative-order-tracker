@@ -182,6 +182,18 @@ button.danger { color: var(--accent); border-color: var(--accent); }
 
 @media (min-width: 48rem) {
   .board { grid-template-columns: 3fr 2fr; }
+
+  /* Both columns share a header row, so the headings and the first nameplates
+     line up side by side. (Subgrid; older browsers just keep the old layout.) */
+  .board { grid-template-rows: auto 1fr; row-gap: 0; }
+  .board > .area { display: grid; grid-row: span 2; grid-template-rows: subgrid; align-content: start; }
+  .board > .area > .plates,
+  .board > .area > .tracker { align-self: start; }
+  .area-head-inactive { align-self: center; margin-bottom: 0.9rem; }
+
+  /* Keep the round counter with its own heading, away from "Inactive". */
+  .board { column-gap: 3rem; }
+  .board .area-head { justify-content: flex-start; gap: 1.5rem; }
 }
 
 .area h2 { font-size: 1.8rem; line-height: 1.2; margin-bottom: 0.5rem; }
